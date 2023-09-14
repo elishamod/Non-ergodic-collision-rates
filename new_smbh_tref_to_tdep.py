@@ -87,7 +87,7 @@ def d_eff(q, m, d0):
     Parameters:
         q : Orbit radius in pc.
         m : SMBH mass in 10^6 Msun.
-        d : Star diameter in dsun.
+        d0 : Star diameter in dsun.
     Returns
         Effective collision diamter, after gravitational focusing, in dsun.
     '''
