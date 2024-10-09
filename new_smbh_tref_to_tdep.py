@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 from matplotlib import ticker, cm, colors
 
 alpha = 1.75
-m_star = 1.0    # in Msun
-m_B = 1.0    # in Msun
-dfacs = [10**k for k in range(4)]
+m_star = 1.0  # in Msun
+m_B = 1.0  # in Msun
+dfacs = [10 ** k for k in range(4)]
 nm, nq = 300, 400
 mlims = [-2, 1]
 qlims = [-7, -2]
@@ -29,7 +29,7 @@ def accum_mass(q, m):
     Returns
         Accumulated mass in 10^6 Msun.
     '''
-    return m * m**(-0.5*(3-alpha)) * q**(3-alpha)
+    return m * m ** (-0.5 * (3 - alpha)) * q ** (3 - alpha)
 
 
 def t_ref_GR(q, m, d):
@@ -66,7 +66,7 @@ def t_ref(q, m, d):
     Returns
         Total refresh time in terms of orbital period T.
     '''
-    return (t_ref_mass(q, m, d)**-1 + t_ref_GR(q, m, d)**-1) ** -1
+    return (t_ref_mass(q, m, d) ** -1 + t_ref_GR(q, m, d) ** -1) ** -1
 
 
 def t_dep(q, m, d):
@@ -91,7 +91,7 @@ def d_eff(q, m, d0):
     Returns
         Effective collision diamter, after gravitational focusing, in dsun.
     '''
-    f = 1e2 * m_star * m**-1 * q * d0**-1
+    f = 1e2 * m_star * m ** -1 * q * d0 ** -1
     return d0 * np.sqrt(1 + f)
 
 
@@ -152,7 +152,7 @@ def tidal_disruption_radius(m, d0):
         Tidal disruption radius (in pc) - under which the star will break apart.
     '''
     R_star_pc = d0 * d_sun_pc / 2
-    return 1e2 * R_star_pc * m**(1/3) * m_star**(-1/3)
+    return 1e2 * R_star_pc * m ** (1 / 3) * m_star ** (-1 / 3)
 
 
 def max_binary_separation(m_B, q, m):
@@ -164,7 +164,7 @@ def max_binary_separation(m_B, q, m):
     Returns
         Maximual separtion of a binary (in pc) due to SMBH's tidal disruption.
     '''
-    return 1e-2 * q * (m_B / m)**(1/3)
+    return 1e-2 * q * (m_B / m) ** (1 / 3)
 
 
 def find_ind_where(x, val, **kwargs):
@@ -186,6 +186,7 @@ def fmt(x, pos):
     else:
         return r'${} \times 10^{{{}}}$'.format(a, b)
 
+
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["mathtext.fontset"] = "dejavuserif"
 plt.rc('axes', labelsize=16)
@@ -195,24 +196,32 @@ plt.rc('legend', fontsize=14)
 plt.rc('axes', titlesize=18)
 
 
-def plot_func(fig, ax, q, m, d0, ext_ratios=(-4, 4), d_for_TDE=-1, focusing=True, do_legend=True):
+def plot_func(fig, ax, q, m, d0, ext_ratios=(-4, 4), d_for_TDE=-1, focusing=True, do_legend=True, binary=False):
     if d_for_TDE == -1:
         d_for_TDE = d0
     min_ratio, max_ratio = ext_ratios[0], ext_ratios[1]
     mass_rat = ratio_mass(q, m, d0, focusing=focusing)
     GR_rat = ratio_GR(q, m, d0, focusing=focusing)
     rat = ratio(q, m, d0, focusing=focusing)
-    rat = np.maximum(np.minimum(rat, 10**max_ratio), 10**min_ratio)
-    cs = ax.contourf(m, q, rat, locator=ticker.LogLocator(), cmap=cm.PuBu_r, \
-                    norm=colors.LogNorm(vmin=rat.min(), vmax=rat.max()), \
-                    levels=10**np.linspace(min_ratio, max_ratio, 1 + 3 * (max_ratio - min_ratio)))
+    rat = np.maximum(np.minimum(rat, 10 ** max_ratio), 10 ** min_ratio)
+    cs = ax.contourf(m, q, rat, locator=ticker.LogLocator(), cmap=cm.PuBu_r,
+                     norm=colors.LogNorm(vmin=rat.min(), vmax=rat.max()),
+                     levels=10 ** np.linspace(min_ratio, max_ratio, 1 + 3 * (max_ratio - min_ratio)))
     cbar = fig.colorbar(cs, format=ticker.FuncFormatter(fmt), ax=ax)
-    ax.plot(m_vec,  R_BH[0, :], 'k', linewidth=2, label='$R_{BH}$')
-    ax.plot(m_vec, tidal_disruption_radius(m_vec, d_for_TDE), 'r', linewidth=2, label='$R_{TDE}$')
+    ax.plot(m_vec, R_BH[0, :], 'k', linewidth=2, label='$R_{BH}$')
+    q_TDE = tidal_disruption_radius(m_vec, d_for_TDE)
+    ax.plot(m_vec, q_TDE, 'r', linewidth=2, label='$R_{TDE}$')
     qind_mass_rat = find_ind_where(mass_rat, 1, axis=0)
     qind_GR_rat = find_ind_where(GR_rat, 1, axis=0)
     ax.plot(m_vec, q_vec[qind_mass_rat], 'g', linewidth=2, label='$mass:t_{ref}=t_{dep}$')
     ax.plot(m_vec, q_vec[qind_GR_rat], 'y', linewidth=2, label='$GR:t_{ref}=t_{dep}$')
+    if binary:
+        q_top = q_vec[qind_mass_rat]
+        q_bot = np.minimum(np.maximum(q_vec[qind_GR_rat], q_TDE), q_top)
+    else:
+        q_top = np.minimum(q_vec[qind_GR_rat], q_vec[qind_mass_rat])
+        q_bot = np.minimum(q_TDE, q_top)
+    ax.fill_between(m_vec, q_bot, q_top, alpha=0.25, color='y')
     ax.grid(True)
     ax.set_xscale('log')
     ax.set_yscale('log')
@@ -220,7 +229,7 @@ def plot_func(fig, ax, q, m, d0, ext_ratios=(-4, 4), d_for_TDE=-1, focusing=True
     ax.set_ylabel('r [pc]')
     if do_legend:
         ax.legend()
-    
+
 
 # Create the stellar collisions figure
 if plot_single:
@@ -229,7 +238,7 @@ if plot_single:
         d0 = dfacs[k]
         ax = axs[k // 2, k % 2]
         plot_func(fig, ax, q, m, d0, ext_ratios=(-4, 4), do_legend=(k == 0))
-        ax.set_title('$t_{ref}/t_{dep}$: D = ' + str(2 * d0) + 'R$_\odot$')
+        ax.set_title('$t_{ref}/t_{dep}$: D = ' + str(2 * d0) + r'R$_\odot$')
         ax.set_ylim(q_vec[0], q_vec[-1])
     fig.set_size_inches(12, 9)
     plt.tight_layout()
@@ -238,7 +247,7 @@ if plot_single:
 if plot_binary:
     d_max = max_binary_separation(m_B, q, m) / d_sun_pc
     fig, ax = plt.subplots(1, 1)
-    plot_func(fig, ax, q, m, d_max, ext_ratios=(-2, 2), d_for_TDE=1.0, focusing=False)
+    plot_func(fig, ax, q, m, d_max, ext_ratios=(-2, 2), d_for_TDE=1.0, focusing=False, binary=True)
     ax.set_title('$t_{ref}/t_{dep}$: Maximal binary separation')
     ax.set_ylim(q_vec[0], q_vec[-1])
     fig.set_size_inches(8, 6)
