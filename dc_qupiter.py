@@ -7,12 +7,13 @@ import matplotlib.pyplot as plt
 from matplotlib import ticker, cm, colors
 
 e = 0.03    # planetesimals' orbit eccentricity
-r = 2.0    # planetesimals' orbit radius in au
-m_star = 1.0    # central star mass in sun masses
+r = 1.0    # planetesimals' orbit radius in au
+m_star = 0.1    # central star mass in sun masses
+d_earth = 2 * 6400    # earth diameter in km
 
-min_dc, max_dc = 3.6, 5.5
-# color_levels = 10**np.linspace(min_dc, max_dc, 1 + 6 * (max_dc - min_dc))
-color_levels = 10**np.linspace(min_dc, max_dc, 15)
+min_dc, max_dc = 3.0, 4.8
+#*qlims) color_levels = 10**np.linspace(min_dc, max_dc, 1 + 6 * (max_dc - min_dc))
+color_levels = 10**np.linspace(min_dc, max_dc, 19)
 
 nm, na = 300, 400
 mlims = [-5, -2]
@@ -60,17 +61,24 @@ dc = np.maximum(dc, 2e4 * e_fac * np.sqrt(r * m_star))
 dc = np.maximum(dc, 10**min_dc)
 dc = np.minimum(dc, 10**max_dc)
 
+# plot the colormap of D_c
 cs = plt.contourf(m, a, dc, locator=ticker.LogLocator(), cmap=cm.PuBu_r, \
                 norm=colors.LogNorm(vmin=dc.min(), vmax=dc.max()), \
                 levels=color_levels)
 cbar = fig.colorbar(cs, format=ticker.FuncFormatter(fmt))
 
+# find and plot the line of D_c = d_earth
+m_earth = m_vec[np.argmin(np.abs(dc - d_earth), axis=1)]
+plt.plot(m_earth, a_vec, color='red', label='$D_c=D_\oplus$')
+
+# stylize the figure
 plt.grid(True)
+plt.legend()
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel(r'$M_Q/M_\star$')
 plt.ylabel(r'$a_Q$ [au]')
-plt.title('$d_c$ [km]: e=' + str(e) + 
+plt.title('$D_c$ [km]: e=' + str(e) + 
           ', r=' + fmt2(r) + 'au, $M_\star$=' + fmt2(m_star) + '$M_\odot$')
 fig.set_size_inches(8, 6)
 plt.tight_layout()
