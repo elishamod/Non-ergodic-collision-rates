@@ -18,8 +18,9 @@ color_levels = 10**np.linspace(min_dc, max_dc, 19)
 nm, na = 300, 400
 mlims = [-5, -2]
 alims = [-2, 2]
+m_eps = 0.02
 # m = M_BH / (1e6 * M_sun)
-m_vec = 10.0 ** np.linspace(mlims[0], mlims[1], nm)
+m_vec = 10.0 ** np.linspace(mlims[0] - m_eps, mlims[1] + m_eps, nm)
 a_vec = 10.0 ** np.linspace(alims[0], alims[1], na)
 m, a = np.meshgrid(m_vec, a_vec)
 
@@ -74,6 +75,7 @@ plt.plot(m_earth, a_vec, color='red', label='$D_c=D_\oplus$')
 # stylize the figure
 plt.grid(True)
 plt.legend()
+plt.xlim(10 ** mlims[0], 10 ** mlims[1])
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel(r'$M_Q/M_\star$')
