@@ -70,7 +70,7 @@ cbar = fig.colorbar(cs, format=ticker.FuncFormatter(fmt))
 
 # find and plot the line of D_c = d_earth
 m_earth = m_vec[np.argmin(np.abs(dc - d_earth), axis=1)]
-plt.plot(m_earth, a_vec, color='red', label='$D_c=D_\oplus$')
+plt.plot(m_earth, a_vec, color='red', label='$D_c=2R_\oplus$')
 
 # stylize the figure
 plt.grid(True)
