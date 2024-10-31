@@ -5,6 +5,7 @@ Plot the ratio of t_ref to t_dep in SMBH and IMBH scenarios.
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import ticker, cm, colors
+import argparse
 
 alpha = 1.75
 m_star = 1.0  # in Msun
@@ -16,6 +17,11 @@ qlims = [-7, -2]
 d_sun_pc = 4.5e-8  # in pc
 plot_single = True
 plot_binary = True
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-s', '--save', action='store_true', help='save the figures')
+args = parser.parse_args()
+save_flag = args.save
 
 
 def accum_mass(q, m):
@@ -239,9 +245,11 @@ if plot_single:
         ax = axs[k // 2, k % 2]
         plot_func(fig, ax, q, m, d0, ext_ratios=(-4, 4), do_legend=(k == 0))
         ax.set_title('$t_{ref}/t_{dep}$: D = ' + str(2 * d0) + r'R$_\odot$')
-        ax.set_ylim(q_vec[0], q_vec[-1])
+        ax.set_ylim(10 ** qlims[0], 10 ** qlims[1])
     fig.set_size_inches(12, 9)
     plt.tight_layout()
+    if save_flag:
+        fig.savefig('figs/t_ratio_SMBH_const_d.pdf')
 
 # Create the binary disruptions figure
 if plot_binary:
@@ -252,5 +260,7 @@ if plot_binary:
     ax.set_ylim(10 ** qlims[0], 10 ** qlims[1])
     fig.set_size_inches(8, 6)
     plt.tight_layout()
+    if save_flag:
+        fig.savefig('figs/t_ratio_SMBH_binary_dmax.pdf')
 
 plt.show()
