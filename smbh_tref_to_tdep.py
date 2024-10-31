@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jan 26 14:38:12 2023
-
-@author: elish
+Plot the ratio of t_ref to t_dep in SMBH and IMBH scenarios.
 """
 import numpy as np
 import matplotlib.pyplot as plt
