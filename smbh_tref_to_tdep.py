@@ -249,7 +249,7 @@ if plot_single:
     fig.set_size_inches(12, 9)
     plt.tight_layout()
     if save_flag:
-        fig.savefig('figs/t_ratio_SMBH_const_d.pdf')
+        fig.savefig('figs/t_ratio_SMBH_const_d.pdf', transparent=True)
 
 # Create the binary disruptions figure
 if plot_binary:
@@ -261,6 +261,6 @@ if plot_binary:
     fig.set_size_inches(8, 6)
     plt.tight_layout()
     if save_flag:
-        fig.savefig('figs/t_ratio_SMBH_binary_dmax.pdf')
+        fig.savefig('figs/t_ratio_SMBH_binary_dmax.pdf', transparent=True)
 
 plt.show()

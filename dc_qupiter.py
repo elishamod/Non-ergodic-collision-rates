@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import ticker, cm, colors
 
+save_flag = True
+
 e = 0.03    # planetesimals' orbit eccentricity
 r = 1.0    # planetesimals' orbit radius in au
 m_star = 0.1    # central star mass in sun masses
@@ -37,8 +39,6 @@ def fmt(x, pos=0):
 
 
 def fmt2(x, pos=0):
-    if x == 1.0:
-        return ''
     if float(int(x)) == x:
         return str(int(x))
     return str(x)
@@ -79,10 +79,12 @@ plt.xlim(10 ** mlims[0], 10 ** mlims[1])
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel(r'$M_Q/M_\star$')
-plt.ylabel(r'$a_Q$ [au]')
+plt.ylabel(r'$a_Q$ [AU]')
 plt.title('$D_c$ [km]: e=' + str(e) + 
-          ', r=' + fmt2(r) + 'au, $M_\star$=' + fmt2(m_star) + '$M_\odot$')
+          ', r=' + fmt2(r) + 'AU, $M_\star$=' + fmt2(m_star) + '$M_\odot$')
 fig.set_size_inches(8, 6)
 plt.tight_layout()
+if save_flag:
+    plt.savefig(f'figs\dc_qupiter_e{e}_r{fmt2(r)}_m{fmt2(m_star)}.pdf', transparent=True)
 plt.show()
 
